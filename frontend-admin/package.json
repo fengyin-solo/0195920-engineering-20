@@ -6,20 +6,31 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "vue-tsc --noEmit",
+    "release": "node scripts/pipeline.mjs"
   },
   "dependencies": {
-    "vue": "^3.4.21",
-    "pinia": "^2.1.7",
-    "element-plus": "^2.6.1",
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.6.7",
+    "element-plus": "^2.6.1",
     "jsbarcode": "^3.11.6",
-    "qrcode": "^1.5.3"
+    "pinia": "^2.1.7",
+    "qrcode": "^1.5.3",
+    "vue": "^3.4.21"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.2",
     "@vitejs/plugin-vue": "^5.0.4",
+    "eslint": "^10.11.0",
+    "eslint-plugin-vue": "^10.11.0",
+    "globals": "^17.12.0",
+    "sass": "^1.71.1",
+    "typescript": "~5.9",
     "vite": "^5.1.6",
-    "sass": "^1.71.1"
+    "vue-tsc": "^3.3.11"
   }
 }

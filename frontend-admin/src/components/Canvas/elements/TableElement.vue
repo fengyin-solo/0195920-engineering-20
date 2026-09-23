@@ -43,7 +43,6 @@ const editText = ref('')
 const editInputRef = ref(null)
 
 const rows = computed(() => props.element.rows || 3)
-const cols = computed(() => props.element.cols || 3)
 
 const tableStyle = computed(() => ({
   width: '100%',
@@ -51,7 +50,7 @@ const tableStyle = computed(() => ({
   overflow: 'hidden'
 }))
 
-const innerTableStyle = computed(() => ({
+const innerTableStyle = computed(() => /** @type {import('vue').CSSProperties} */ ({
   width: '100%',
   height: '100%',
   borderCollapse: 'collapse',
@@ -59,7 +58,7 @@ const innerTableStyle = computed(() => ({
   border: `${props.element.borderWidth || 1}px solid ${props.element.borderColor || '#000000'}`
 }))
 
-const cellStyle = computed(() => ({
+const cellStyle = computed(() => /** @type {import('vue').CSSProperties} */ ({
   border: `${props.element.borderWidth || 1}px solid ${props.element.borderColor || '#000000'}`,
   padding: '2px 4px',
   fontSize: `${props.element.cellFontSize || 12}px`,
