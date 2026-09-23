@@ -21,15 +21,44 @@ docker-compose up -d --build
 # 进入前端项目目录
 cd frontend-admin
 
-# 安装依赖
-npm install
+# 安装依赖（严格按 package-lock.json 安装，保证每个人环境一致）
+npm ci
 
 # 启动开发服务器
 npm run dev
-
-# 构建生产版本
-npm run build
 ```
+
+### 方式三：本地构建生产版本
+
+```bash
+cd frontend-admin
+
+# 一条命令走完发布流水线（推荐，替代手工 npm run build）
+npm run release
+```
+
+`npm run release` 会依次执行，任一步骤失败立即中止并报出「卡在第几步、原因是什么」：
+
+| 步骤 | 内容 | 对应命令 |
+|------|------|----------|
+| 1/5 | 依赖安装（按 lock 文件，已一致时自动跳过） | `npm ci` |
+| 2/5 | 静态检查（ESLint，js/vue） | `npm run lint` |
+| 3/5 | 类型检查（vue-tsc，含 .vue 模板） | `npm run typecheck` |
+| 4/5 | 样式编译检查（sass 预编译） | `npm run check:styles` |
+| 5/5 | 产物打包（vite build） | `npm run build` |
+
+也可以单独执行各检查命令在开发时提前发现问题。
+
+流水线特性：
+
+- **版本一致**：依赖以 `package-lock.json` 为准（`npm ci`)，不同人、不同机器装出相同的依赖；
+- **失败可重试**：修复后重新 `npm run release`，npm 下载缓存、`node_modules`、vite 转换缓存都会被复用，只跑必要的工作；
+- **不留半成品**：打包先写入 `release-staging/` 暂存目录，构建成功后才原子替换 `dist/`；失败时清理暂存目录，上一次成功的 `dist/` 不受影响；
+- **产物与入口不变**：最终产物仍是 `frontend-admin/dist/`，发布仍然走 `docker-compose up -d --build`（Dockerfile 内部改为执行同一条流水线）。
+
+可选参数：`npm run release -- --force-deps` 强制重装依赖。
+
+> `npm run build`（直接 vite build）仍然保留可用，但它不包含上述检查，正式发布请使用 `npm run release` 或 Docker 构建。
 
 ## Services
 
@@ -61,7 +90,13 @@ npm run build
 ├── .gitignore                   # Git 忽略文件
 └── frontend-admin/              # 前端项目代码
     ├── package.json             # 项目依赖配置
-    ├── Dockerfile               # Docker 构建文件
+    ├── package-lock.json        # 依赖版本锁定文件（npm ci 以此为准）
+    ├── eslint.config.js         # ESLint 静态检查配置
+    ├── tsconfig.json            # vue-tsc 类型检查配置
+    ├── scripts/
+    │   ├── release.mjs          # 发布流水线：依赖→检查→打包
+    │   └── check-styles.mjs     # 样式编译检查
+    ├── Dockerfile               # Docker 构建文件（内部执行发布流水线）
     ├── nginx.conf               # Nginx 配置文件
     ├── vite.config.js           # Vite 构建配置
     ├── index.html               # 入口 HTML 文件

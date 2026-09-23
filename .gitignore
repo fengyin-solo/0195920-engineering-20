@@ -8,6 +8,12 @@ dist/
 build/
 *.local
 
+# 发布流水线的临时/回滚目录（不应进入版本库）
+release-staging/
+dist.bak/
+node_modules/.vite/
+.eslintcache
+
 # IDE
 .idea/
 .vscode/
